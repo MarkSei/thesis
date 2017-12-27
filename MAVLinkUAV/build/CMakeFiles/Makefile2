@@ -54,10 +54,10 @@ RM = /usr/local/Cellar/cmake/3.9.4_1/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/masei/Desktop/Study-folder/Thesis/Code/src/MAVLinkUAV
+CMAKE_SOURCE_DIR = /Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/MAVLinkUAV
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/masei/Desktop/Study-folder/Thesis/Code/src/MAVLinkUAV/build
+CMAKE_BINARY_DIR = /Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/MAVLinkUAV/build
 
 #=============================================================================
 # Target rules for target CMakeFiles/mavlinkuav.dir
@@ -66,7 +66,7 @@ CMAKE_BINARY_DIR = /Users/masei/Desktop/Study-folder/Thesis/Code/src/MAVLinkUAV/
 CMakeFiles/mavlinkuav.dir/all:
 	$(MAKE) -f CMakeFiles/mavlinkuav.dir/build.make CMakeFiles/mavlinkuav.dir/depend
 	$(MAKE) -f CMakeFiles/mavlinkuav.dir/build.make CMakeFiles/mavlinkuav.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/masei/Desktop/Study-folder/Thesis/Code/src/MAVLinkUAV/build/CMakeFiles --progress-num=1,2 "Built target mavlinkuav"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/MAVLinkUAV/build/CMakeFiles --progress-num=1,2 "Built target mavlinkuav"
 .PHONY : CMakeFiles/mavlinkuav.dir/all
 
 # Include target in all.
@@ -76,9 +76,9 @@ all: CMakeFiles/mavlinkuav.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/mavlinkuav.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/masei/Desktop/Study-folder/Thesis/Code/src/MAVLinkUAV/build/CMakeFiles 2
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/MAVLinkUAV/build/CMakeFiles 2
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/mavlinkuav.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/masei/Desktop/Study-folder/Thesis/Code/src/MAVLinkUAV/build/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/MAVLinkUAV/build/CMakeFiles 0
 .PHONY : CMakeFiles/mavlinkuav.dir/rule
 
 # Convenience name for target.

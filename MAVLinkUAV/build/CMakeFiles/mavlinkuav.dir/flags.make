@@ -6,5 +6,5 @@ C_FLAGS =  -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX
 
 C_DEFINES = 
 
-C_INCLUDES = -I/Users/masei/Desktop/Study-folder/Thesis/Code/src/MAVLinkUAV/include -I/Users/masei/Desktop/Study-folder/Thesis/Code/src/MAVLinkUAV/include/common 
+C_INCLUDES = -I/Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/MAVLinkUAV/include -I/Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/MAVLinkUAV/include/common 
 

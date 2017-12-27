@@ -138,8 +138,8 @@ CMakeFiles/groundcontrolstation.dir/src/main.c.o: ../include/common/./mavlink_ms
 CMakeFiles/groundcontrolstation.dir/src/main.c.o: ../include/common/./mavlink_msg_vision_position_estimate.h
 CMakeFiles/groundcontrolstation.dir/src/main.c.o: ../include/common/./mavlink_msg_vision_speed_estimate.h
 CMakeFiles/groundcontrolstation.dir/src/main.c.o: ../include/common/./mavlink_msg_wind_cov.h
+CMakeFiles/groundcontrolstation.dir/src/main.c.o: ../include/common/common.h
 CMakeFiles/groundcontrolstation.dir/src/main.c.o: ../include/common/mavlink.h
-CMakeFiles/groundcontrolstation.dir/src/main.c.o: ../include/common/output.h
 CMakeFiles/groundcontrolstation.dir/src/main.c.o: ../include/common/version.h
 CMakeFiles/groundcontrolstation.dir/src/main.c.o: ../include/crypto/aes.c
 CMakeFiles/groundcontrolstation.dir/src/main.c.o: ../include/crypto/aes.h

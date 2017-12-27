@@ -282,13 +282,7 @@ stdint.h
 
 ../include/common/./mavlink_msg_wind_cov.h
 
-../include/common/mavlink.h
-version.h
-../include/common/version.h
-output.h
-../include/common/output.h
-
-../include/common/output.h
+../include/common/common.h
 ../protocol.h
 ../include/protocol.h
 ./mavlink_msg_heartbeat.h
@@ -566,6 +560,12 @@ output.h
 ../mavlink_get_info.h
 ../include/mavlink_get_info.h
 
+../include/common/mavlink.h
+version.h
+../include/common/version.h
+common.h
+../include/common/common.h
+
 ../include/common/version.h
 
 ../include/crypto/aes.c
@@ -626,7 +626,7 @@ mavlink_types.h
 mavlink_helpers.h
 ../include/mavlink_helpers.h
 
-/Users/masei/Desktop/Study-folder/Thesis/Code/src/MAVLinkUAV/src/udpserver.c
+/Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/MAVLinkUAV/src/udpserver.c
 stdio.h
 -
 unistd.h
@@ -646,5 +646,5 @@ netinet/in.h
 arpa/inet.h
 -
 mavlink.h
-/Users/masei/Desktop/Study-folder/Thesis/Code/src/MAVLinkUAV/src/mavlink.h
+/Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/MAVLinkUAV/src/mavlink.h
 

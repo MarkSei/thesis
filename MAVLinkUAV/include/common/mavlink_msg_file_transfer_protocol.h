@@ -9,45 +9,37 @@ typedef struct __mavlink_file_transfer_protocol_t {
  uint8_t target_system; /*< System ID (0 for broadcast)*/
  uint8_t target_component; /*< Component ID (0 for broadcast)*/
  uint8_t payload[251]; /*< Variable length payload. The length is defined by the remaining message length when subtracting the header and other fields.  The entire content of this block is opaque unless you understand any the encoding message_type.  The particular encoding used can be extension specific and might not always be documented as part of the mavlink specification.*/
- uint8_t padding[2]; /*< Padding for encryption*/
- uint8_t tag[16]; /*< 128 bit message signature*/
 }) mavlink_file_transfer_protocol_t;
 
-#define MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_LEN 272
-#define MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_MIN_LEN 272
-#define MAVLINK_MSG_ID_110_LEN 272
-#define MAVLINK_MSG_ID_110_MIN_LEN 272
+#define MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_LEN 254
+#define MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_MIN_LEN 254
+#define MAVLINK_MSG_ID_110_LEN 254
+#define MAVLINK_MSG_ID_110_MIN_LEN 254
 
-#define MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_CRC 179
-#define MAVLINK_MSG_ID_110_CRC 179
+#define MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_CRC 84
+#define MAVLINK_MSG_ID_110_CRC 84
 
 #define MAVLINK_MSG_FILE_TRANSFER_PROTOCOL_FIELD_PAYLOAD_LEN 251
-#define MAVLINK_MSG_FILE_TRANSFER_PROTOCOL_FIELD_PADDING_LEN 2
-#define MAVLINK_MSG_FILE_TRANSFER_PROTOCOL_FIELD_TAG_LEN 16
 
 #if MAVLINK_COMMAND_24BIT
 #define MAVLINK_MESSAGE_INFO_FILE_TRANSFER_PROTOCOL { \
     110, \
     "FILE_TRANSFER_PROTOCOL", \
-    6, \
+    4, \
     {  { "target_network", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_file_transfer_protocol_t, target_network) }, \
          { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_file_transfer_protocol_t, target_system) }, \
          { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 2, offsetof(mavlink_file_transfer_protocol_t, target_component) }, \
          { "payload", NULL, MAVLINK_TYPE_UINT8_T, 251, 3, offsetof(mavlink_file_transfer_protocol_t, payload) }, \
-         { "padding", NULL, MAVLINK_TYPE_UINT8_T, 2, 254, offsetof(mavlink_file_transfer_protocol_t, padding) }, \
-         { "tag", NULL, MAVLINK_TYPE_UINT8_T, 16, 256, offsetof(mavlink_file_transfer_protocol_t, tag) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_FILE_TRANSFER_PROTOCOL { \
     "FILE_TRANSFER_PROTOCOL", \
-    6, \
+    4, \
     {  { "target_network", NULL, MAVLINK_TYPE_UINT8_T, 0, 0, offsetof(mavlink_file_transfer_protocol_t, target_network) }, \
          { "target_system", NULL, MAVLINK_TYPE_UINT8_T, 0, 1, offsetof(mavlink_file_transfer_protocol_t, target_system) }, \
          { "target_component", NULL, MAVLINK_TYPE_UINT8_T, 0, 2, offsetof(mavlink_file_transfer_protocol_t, target_component) }, \
          { "payload", NULL, MAVLINK_TYPE_UINT8_T, 251, 3, offsetof(mavlink_file_transfer_protocol_t, payload) }, \
-         { "padding", NULL, MAVLINK_TYPE_UINT8_T, 2, 254, offsetof(mavlink_file_transfer_protocol_t, padding) }, \
-         { "tag", NULL, MAVLINK_TYPE_UINT8_T, 16, 256, offsetof(mavlink_file_transfer_protocol_t, tag) }, \
          } \
 }
 #endif
@@ -73,8 +65,6 @@ static inline uint16_t mavlink_msg_file_transfer_protocol_pack(uint8_t system_id
     _mav_put_uint8_t(buf, 1, target_system);
     _mav_put_uint8_t(buf, 2, target_component);
     _mav_put_uint8_t_array(buf, 3, payload, 251);
-    _mav_put_uint8_t_array(buf, 254, NULL, 2);
-    _mav_put_uint8_t_array(buf, 256, NULL, 16);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_LEN);
 #else
     mavlink_file_transfer_protocol_t packet;
@@ -82,8 +72,6 @@ static inline uint16_t mavlink_msg_file_transfer_protocol_pack(uint8_t system_id
     packet.target_system = target_system;
     packet.target_component = target_component;
     mav_array_memcpy(packet.payload, payload, sizeof(uint8_t)*251);
-    mav_array_memcpy(packet.padding, NULL, sizeof(uint8_t)*2);
-    mav_array_memcpy(packet.tag, NULL, sizeof(uint8_t)*16);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_LEN);
 #endif
 
@@ -113,8 +101,6 @@ static inline uint16_t mavlink_msg_file_transfer_protocol_pack_chan(uint8_t syst
     _mav_put_uint8_t(buf, 1, target_system);
     _mav_put_uint8_t(buf, 2, target_component);
     _mav_put_uint8_t_array(buf, 3, payload, 251);
-    _mav_put_uint8_t_array(buf, 254, NULL, 2);
-    _mav_put_uint8_t_array(buf, 256, NULL, 16);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_LEN);
 #else
     mavlink_file_transfer_protocol_t packet;
@@ -122,8 +108,6 @@ static inline uint16_t mavlink_msg_file_transfer_protocol_pack_chan(uint8_t syst
     packet.target_system = target_system;
     packet.target_component = target_component;
     mav_array_memcpy(packet.payload, payload, sizeof(uint8_t)*251);
-    mav_array_memcpy(packet.padding, NULL, sizeof(uint8_t)*2);
-    mav_array_memcpy(packet.tag, NULL, sizeof(uint8_t)*16);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_LEN);
 #endif
 
@@ -177,8 +161,6 @@ static inline void mavlink_msg_file_transfer_protocol_send(mavlink_channel_t cha
     _mav_put_uint8_t(buf, 1, target_system);
     _mav_put_uint8_t(buf, 2, target_component);
     _mav_put_uint8_t_array(buf, 3, payload, 251);
-    _mav_put_uint8_t_array(buf, 254, NULL, 2);
-    _mav_put_uint8_t_array(buf, 256, NULL, 16);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL, buf, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_MIN_LEN, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_LEN, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_CRC);
 #else
     mavlink_file_transfer_protocol_t packet;
@@ -186,8 +168,6 @@ static inline void mavlink_msg_file_transfer_protocol_send(mavlink_channel_t cha
     packet.target_system = target_system;
     packet.target_component = target_component;
     mav_array_memcpy(packet.payload, payload, sizeof(uint8_t)*251);
-    mav_array_memcpy(packet.padding, NULL, sizeof(uint8_t)*2);
-    mav_array_memcpy(packet.tag, NULL, sizeof(uint8_t)*16);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL, (const char *)&packet, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_MIN_LEN, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_LEN, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_CRC);
 #endif
 }
@@ -222,8 +202,6 @@ static inline void mavlink_msg_file_transfer_protocol_send_buf(mavlink_message_t
     _mav_put_uint8_t(buf, 1, target_system);
     _mav_put_uint8_t(buf, 2, target_component);
     _mav_put_uint8_t_array(buf, 3, payload, 251);
-    _mav_put_uint8_t_array(buf, 254, NULL, 2);
-    _mav_put_uint8_t_array(buf, 256, NULL, 16);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL, buf, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_MIN_LEN, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_LEN, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_CRC);
 #else
     mavlink_file_transfer_protocol_t *packet = (mavlink_file_transfer_protocol_t *)msgbuf;
@@ -231,8 +209,6 @@ static inline void mavlink_msg_file_transfer_protocol_send_buf(mavlink_message_t
     packet->target_system = target_system;
     packet->target_component = target_component;
     mav_array_memcpy(packet->payload, payload, sizeof(uint8_t)*251);
-    mav_array_memcpy(packet->padding, NULL, sizeof(uint8_t)*2);
-    mav_array_memcpy(packet->tag, NULL, sizeof(uint8_t)*16);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL, (const char *)packet, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_MIN_LEN, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_LEN, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_CRC);
 #endif
 }
@@ -284,26 +260,6 @@ static inline uint16_t mavlink_msg_file_transfer_protocol_get_payload(const mavl
 }
 
 /**
- * @brief Get field padding from file_transfer_protocol message
- *
- * @return Padding for encryption
- */
-static inline uint16_t mavlink_msg_file_transfer_protocol_get_padding(const mavlink_message_t* msg, uint8_t *padding)
-{
-    return _MAV_RETURN_uint8_t_array(msg, padding, 2,  254);
-}
-
-/**
- * @brief Get field tag from file_transfer_protocol message
- *
- * @return 128 bit message signature
- */
-static inline uint16_t mavlink_msg_file_transfer_protocol_get_tag(const mavlink_message_t* msg, uint8_t *tag)
-{
-    return _MAV_RETURN_uint8_t_array(msg, tag, 16,  256);
-}
-
-/**
  * @brief Decode a file_transfer_protocol message into a struct
  *
  * @param msg The message to decode
@@ -316,8 +272,6 @@ static inline void mavlink_msg_file_transfer_protocol_decode(const mavlink_messa
     file_transfer_protocol->target_system = mavlink_msg_file_transfer_protocol_get_target_system(msg);
     file_transfer_protocol->target_component = mavlink_msg_file_transfer_protocol_get_target_component(msg);
     mavlink_msg_file_transfer_protocol_get_payload(msg, file_transfer_protocol->payload);
-    mavlink_msg_file_transfer_protocol_get_padding(msg, file_transfer_protocol->padding);
-    mavlink_msg_file_transfer_protocol_get_tag(msg, file_transfer_protocol->tag);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_LEN? msg->len : MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_LEN;
         memset(file_transfer_protocol, 0, MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL_LEN);

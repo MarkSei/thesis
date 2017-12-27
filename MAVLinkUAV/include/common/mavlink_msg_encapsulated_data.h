@@ -7,41 +7,33 @@ MAVPACKED(
 typedef struct __mavlink_encapsulated_data_t {
  uint16_t seqnr; /*< sequence number (starting with 0 on every transmission)*/
  uint8_t data[253]; /*< image data bytes*/
- uint8_t padding[1]; /*< Padding for encryption*/
- uint8_t tag[16]; /*< 128 bit message signature*/
 }) mavlink_encapsulated_data_t;
 
-#define MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN 272
-#define MAVLINK_MSG_ID_ENCAPSULATED_DATA_MIN_LEN 272
-#define MAVLINK_MSG_ID_131_LEN 272
-#define MAVLINK_MSG_ID_131_MIN_LEN 272
+#define MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN 255
+#define MAVLINK_MSG_ID_ENCAPSULATED_DATA_MIN_LEN 255
+#define MAVLINK_MSG_ID_131_LEN 255
+#define MAVLINK_MSG_ID_131_MIN_LEN 255
 
-#define MAVLINK_MSG_ID_ENCAPSULATED_DATA_CRC 157
-#define MAVLINK_MSG_ID_131_CRC 157
+#define MAVLINK_MSG_ID_ENCAPSULATED_DATA_CRC 223
+#define MAVLINK_MSG_ID_131_CRC 223
 
 #define MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_DATA_LEN 253
-#define MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_PADDING_LEN 1
-#define MAVLINK_MSG_ENCAPSULATED_DATA_FIELD_TAG_LEN 16
 
 #if MAVLINK_COMMAND_24BIT
 #define MAVLINK_MESSAGE_INFO_ENCAPSULATED_DATA { \
     131, \
     "ENCAPSULATED_DATA", \
-    4, \
+    2, \
     {  { "seqnr", NULL, MAVLINK_TYPE_UINT16_T, 0, 0, offsetof(mavlink_encapsulated_data_t, seqnr) }, \
          { "data", NULL, MAVLINK_TYPE_UINT8_T, 253, 2, offsetof(mavlink_encapsulated_data_t, data) }, \
-         { "padding", NULL, MAVLINK_TYPE_UINT8_T, 1, 255, offsetof(mavlink_encapsulated_data_t, padding) }, \
-         { "tag", NULL, MAVLINK_TYPE_UINT8_T, 16, 256, offsetof(mavlink_encapsulated_data_t, tag) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_ENCAPSULATED_DATA { \
     "ENCAPSULATED_DATA", \
-    4, \
+    2, \
     {  { "seqnr", NULL, MAVLINK_TYPE_UINT16_T, 0, 0, offsetof(mavlink_encapsulated_data_t, seqnr) }, \
          { "data", NULL, MAVLINK_TYPE_UINT8_T, 253, 2, offsetof(mavlink_encapsulated_data_t, data) }, \
-         { "padding", NULL, MAVLINK_TYPE_UINT8_T, 1, 255, offsetof(mavlink_encapsulated_data_t, padding) }, \
-         { "tag", NULL, MAVLINK_TYPE_UINT8_T, 16, 256, offsetof(mavlink_encapsulated_data_t, tag) }, \
          } \
 }
 #endif
@@ -63,15 +55,11 @@ static inline uint16_t mavlink_msg_encapsulated_data_pack(uint8_t system_id, uin
     char buf[MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN];
     _mav_put_uint16_t(buf, 0, seqnr);
     _mav_put_uint8_t_array(buf, 2, data, 253);
-    _mav_put_uint8_t_array(buf, 255, NULL, 1);
-    _mav_put_uint8_t_array(buf, 256, NULL, 16);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN);
 #else
     mavlink_encapsulated_data_t packet;
     packet.seqnr = seqnr;
     mav_array_memcpy(packet.data, data, sizeof(uint8_t)*253);
-    mav_array_memcpy(packet.padding, NULL, sizeof(uint8_t)*1);
-    mav_array_memcpy(packet.tag, NULL, sizeof(uint8_t)*16);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN);
 #endif
 
@@ -97,15 +85,11 @@ static inline uint16_t mavlink_msg_encapsulated_data_pack_chan(uint8_t system_id
     char buf[MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN];
     _mav_put_uint16_t(buf, 0, seqnr);
     _mav_put_uint8_t_array(buf, 2, data, 253);
-    _mav_put_uint8_t_array(buf, 255, NULL, 1);
-    _mav_put_uint8_t_array(buf, 256, NULL, 16);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN);
 #else
     mavlink_encapsulated_data_t packet;
     packet.seqnr = seqnr;
     mav_array_memcpy(packet.data, data, sizeof(uint8_t)*253);
-    mav_array_memcpy(packet.padding, NULL, sizeof(uint8_t)*1);
-    mav_array_memcpy(packet.tag, NULL, sizeof(uint8_t)*16);
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN);
 #endif
 
@@ -155,15 +139,11 @@ static inline void mavlink_msg_encapsulated_data_send(mavlink_channel_t chan, ui
     char buf[MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN];
     _mav_put_uint16_t(buf, 0, seqnr);
     _mav_put_uint8_t_array(buf, 2, data, 253);
-    _mav_put_uint8_t_array(buf, 255, NULL, 1);
-    _mav_put_uint8_t_array(buf, 256, NULL, 16);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ENCAPSULATED_DATA, buf, MAVLINK_MSG_ID_ENCAPSULATED_DATA_MIN_LEN, MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN, MAVLINK_MSG_ID_ENCAPSULATED_DATA_CRC);
 #else
     mavlink_encapsulated_data_t packet;
     packet.seqnr = seqnr;
     mav_array_memcpy(packet.data, data, sizeof(uint8_t)*253);
-    mav_array_memcpy(packet.padding, NULL, sizeof(uint8_t)*1);
-    mav_array_memcpy(packet.tag, NULL, sizeof(uint8_t)*16);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ENCAPSULATED_DATA, (const char *)&packet, MAVLINK_MSG_ID_ENCAPSULATED_DATA_MIN_LEN, MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN, MAVLINK_MSG_ID_ENCAPSULATED_DATA_CRC);
 #endif
 }
@@ -196,15 +176,11 @@ static inline void mavlink_msg_encapsulated_data_send_buf(mavlink_message_t *msg
     char *buf = (char *)msgbuf;
     _mav_put_uint16_t(buf, 0, seqnr);
     _mav_put_uint8_t_array(buf, 2, data, 253);
-    _mav_put_uint8_t_array(buf, 255, NULL, 1);
-    _mav_put_uint8_t_array(buf, 256, NULL, 16);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ENCAPSULATED_DATA, buf, MAVLINK_MSG_ID_ENCAPSULATED_DATA_MIN_LEN, MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN, MAVLINK_MSG_ID_ENCAPSULATED_DATA_CRC);
 #else
     mavlink_encapsulated_data_t *packet = (mavlink_encapsulated_data_t *)msgbuf;
     packet->seqnr = seqnr;
     mav_array_memcpy(packet->data, data, sizeof(uint8_t)*253);
-    mav_array_memcpy(packet->padding, NULL, sizeof(uint8_t)*1);
-    mav_array_memcpy(packet->tag, NULL, sizeof(uint8_t)*16);
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_ENCAPSULATED_DATA, (const char *)packet, MAVLINK_MSG_ID_ENCAPSULATED_DATA_MIN_LEN, MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN, MAVLINK_MSG_ID_ENCAPSULATED_DATA_CRC);
 #endif
 }
@@ -236,26 +212,6 @@ static inline uint16_t mavlink_msg_encapsulated_data_get_data(const mavlink_mess
 }
 
 /**
- * @brief Get field padding from encapsulated_data message
- *
- * @return Padding for encryption
- */
-static inline uint16_t mavlink_msg_encapsulated_data_get_padding(const mavlink_message_t* msg, uint8_t *padding)
-{
-    return _MAV_RETURN_uint8_t_array(msg, padding, 1,  255);
-}
-
-/**
- * @brief Get field tag from encapsulated_data message
- *
- * @return 128 bit message signature
- */
-static inline uint16_t mavlink_msg_encapsulated_data_get_tag(const mavlink_message_t* msg, uint8_t *tag)
-{
-    return _MAV_RETURN_uint8_t_array(msg, tag, 16,  256);
-}
-
-/**
  * @brief Decode a encapsulated_data message into a struct
  *
  * @param msg The message to decode
@@ -266,8 +222,6 @@ static inline void mavlink_msg_encapsulated_data_decode(const mavlink_message_t*
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     encapsulated_data->seqnr = mavlink_msg_encapsulated_data_get_seqnr(msg);
     mavlink_msg_encapsulated_data_get_data(msg, encapsulated_data->data);
-    mavlink_msg_encapsulated_data_get_padding(msg, encapsulated_data->padding);
-    mavlink_msg_encapsulated_data_get_tag(msg, encapsulated_data->tag);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN? msg->len : MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN;
         memset(encapsulated_data, 0, MAVLINK_MSG_ID_ENCAPSULATED_DATA_LEN);

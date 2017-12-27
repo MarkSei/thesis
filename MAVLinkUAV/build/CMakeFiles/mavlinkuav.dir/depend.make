@@ -138,8 +138,8 @@ CMakeFiles/mavlinkuav.dir/src/udpserver.c.o: ../include/common/./mavlink_msg_vic
 CMakeFiles/mavlinkuav.dir/src/udpserver.c.o: ../include/common/./mavlink_msg_vision_position_estimate.h
 CMakeFiles/mavlinkuav.dir/src/udpserver.c.o: ../include/common/./mavlink_msg_vision_speed_estimate.h
 CMakeFiles/mavlinkuav.dir/src/udpserver.c.o: ../include/common/./mavlink_msg_wind_cov.h
+CMakeFiles/mavlinkuav.dir/src/udpserver.c.o: ../include/common/common.h
 CMakeFiles/mavlinkuav.dir/src/udpserver.c.o: ../include/common/mavlink.h
-CMakeFiles/mavlinkuav.dir/src/udpserver.c.o: ../include/common/output.h
 CMakeFiles/mavlinkuav.dir/src/udpserver.c.o: ../include/common/version.h
 CMakeFiles/mavlinkuav.dir/src/udpserver.c.o: ../include/crypto/aes.c
 CMakeFiles/mavlinkuav.dir/src/udpserver.c.o: ../include/crypto/aes.h

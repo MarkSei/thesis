@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_C
-  "/Users/masei/Desktop/Study-folder/Thesis/Code/src/GroundControlStation/src/main.c" "/Users/masei/Desktop/Study-folder/Thesis/Code/src/GroundControlStation/build/CMakeFiles/groundcontrolstation.dir/src/main.c.o"
+  "/Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/GroundControlStation/src/main.c" "/Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/GroundControlStation/build/CMakeFiles/groundcontrolstation.dir/src/main.c.o"
   )
 set(CMAKE_C_COMPILER_ID "AppleClang")
 
