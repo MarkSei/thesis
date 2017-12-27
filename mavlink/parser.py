@@ -2,12 +2,19 @@ import xml.etree.ElementTree as ET
 import re
 import subprocess
 import sys
+from optparse import OptionParser
 
-if len(sys.argv) != 2:
-	sys.exit("Usage: %s <definition>" % sys.argv[0])
+parser = OptionParser()
 
+parser.add_option("-v", "--version", dest="version",
+                  help="mavlink version", metavar="VERSION")
 
-tree = ET.parse(sys.argv[1])
+if len(sys.argv) != 3:
+	sys.exit("Usage: %s <definition> [options]" % sys.argv[0])
+
+(options, args) = parser.parse_args()
+
+tree = ET.parse(args[0])
 root = tree.getroot()
 
 lengths = {
@@ -52,7 +59,7 @@ for child in root.iter('message'):
 	
 	padding = block_size - (size % block_size)
 
-	if (size + block_size + padding) <= 255:
+	if (size + block_size + padding) <= 255 and options.version == '1.0':
 
 		attrib = {'type': 'uint8_t[{}]'.format(padding), 'name': 'padding'}
 		new_field = ET.SubElement(child, 'field', attrib)
@@ -62,10 +69,16 @@ for child in root.iter('message'):
 		new_field = ET.SubElement(child, 'field', attrib)
 		new_field.text = "128 bit message signature"
 
+	elif (size + padding) <= 255 and options.version == '2.0':
+
+		attrib = {'type': 'uint8_t[{}]'.format(padding), 'name': 'padding'}
+		new_field = ET.SubElement(child, 'field', attrib)
+		new_field.text = "Padding for encryption"
+
 
 tree.write('common.xml')
 
-subprocess.call(["python","-m","pymavlink.tools.mavgen","--lang=C","--wire-protocol=1.0", "--output=../include", "common.xml"])
+subprocess.call(["python","-m","pymavlink.tools.mavgen","--lang=C","--wire-protocol=%s" % options.version, "--output=../include", "common.xml"])
 subprocess.call(["rm", "-f", "common.xml"])
 
 
