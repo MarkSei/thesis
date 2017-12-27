@@ -1,8 +1,13 @@
 import xml.etree.ElementTree as ET
 import re
 import subprocess
+import sys
 
-tree = ET.parse('common-test.xml')
+if len(sys.argv) != 2:
+	sys.exit("Usage: %s <definition>" % sys.argv[0])
+
+
+tree = ET.parse(sys.argv[1])
 root = tree.getroot()
 
 lengths = {
@@ -47,18 +52,22 @@ for child in root.iter('message'):
 	
 	padding = block_size - (size % block_size)
 
-	attrib = {'type': 'uint8_t[{}]'.format(padding), 'name': 'padding'}
-	new_field = ET.SubElement(child, 'field', attrib)
-	new_field.text = "Padding for encryption"
+	if (size + block_size + padding) <= 255:
 
-	attrib = {'type': 'uint8_t[16]', 'name': 'tag'}
-	new_field = ET.SubElement(child, 'field', attrib)
-	new_field.text = "128 bit message signature"
+		attrib = {'type': 'uint8_t[{}]'.format(padding), 'name': 'padding'}
+		new_field = ET.SubElement(child, 'field', attrib)
+		new_field.text = "Padding for encryption"
+
+		attrib = {'type': 'uint8_t[16]', 'name': 'tag'}
+		new_field = ET.SubElement(child, 'field', attrib)
+		new_field.text = "128 bit message signature"
 
 
-tree.write('output.xml')
+tree.write('common.xml')
 
-subprocess.call(["python","-m","pymavlink.tools.mavgen","--lang=C","--wire-protocol=1.0", "--output=test/", "output.xml"])
+subprocess.call(["python","-m","pymavlink.tools.mavgen","--lang=C","--wire-protocol=1.0", "--output=../include", "common.xml"])
+subprocess.call(["rm", "-f", "common.xml"])
+
 
 # python -m pymavlink.tools.mavgen --lang=C --wire-protocol=2.0 --output=generated/include/mavlink/v2.0 message_definitions/v1.0/common.xml
 
