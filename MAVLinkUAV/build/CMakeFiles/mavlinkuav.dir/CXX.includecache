@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/masei/Desktop/Study-folder/Thesis/Code/src/MAVLinkUAV/src/main.cpp
+arpa/inet.h
+-
+netinet/in.h
+-
+stdio.h
+-
+sys/types.h
+-
+sys/socket.h
+-
+unistd.h
+-
+string.h
+-
+unistd.h
+-
+stdio.h
+-
+
