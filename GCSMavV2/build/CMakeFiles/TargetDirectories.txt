@@ -1,3 +1,0 @@
-/Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/GCSMavV2/build/CMakeFiles/rebuild_cache.dir
-/Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/GCSMavV2/build/CMakeFiles/edit_cache.dir
-/Users/masei/Desktop/Study-folder/Thesis/Code/src/thesis/GCSMavV2/build/CMakeFiles/gcsmavv2.dir

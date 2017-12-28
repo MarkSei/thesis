@@ -59,7 +59,29 @@ int main(void) {
 	for(unsigned int i = 0; i < len; ++i) printf("%02x ", buf[i]);
 	printf("\n");
 	
-	printf("%d\n", msg.len);
+	mavlink_init_secure_chan(&signing, MAVLINK_ROLE_UAV);
+	mavlink_message_t msg_rec;
+    mavlink_heartbeat_t heartbeat;
+
+	for (unsigned int i = 0; i < len; ++i)
+    {
+      //printf("%02x ", (unsigned char)temp);
+      if (mavlink_parse_char(MAVLINK_COMM_0, buf[i], &msg_rec, status))
+      {
+        // Packet received
+        //mavlink_msg_heartbeat_decode(&msg, &hb);
+        if(msg_rec.msgid == 0)
+        {
+          printf("\nReceived packet: SYS: %d, COMP: %d, LEN: %d, MSG ID: %d\n", msg_rec.sysid, msg_rec.compid, msg_rec.len, msg_rec.msgid);
+        }
+        mavlink_msg_heartbeat_decode(&msg_rec, &heartbeat);
+        
+        //printf("\nPayload: %d\n", hb.type);
+      } 
+    }
+
+    printf("\n");
+    for(unsigned int i = 0; i < msg_rec.len; i++) printf("%02x ", (uint8_t)_MAV_PAYLOAD(&msg_rec)[i]);
 
 
 	
