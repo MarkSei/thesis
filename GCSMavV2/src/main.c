@@ -82,6 +82,7 @@ int main(void) {
 
     printf("\n");
     for(unsigned int i = 0; i < msg_rec.len; i++) printf("%02x ", (uint8_t)_MAV_PAYLOAD(&msg_rec)[i]);
+    printf("\n");
 
 
 	
