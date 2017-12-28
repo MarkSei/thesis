@@ -2746,6 +2746,13 @@
       <field type="uint64_t" name="time_unix_usec" units="us">Timestamp of the master clock in microseconds since UNIX epoch.</field>
       <field type="uint32_t" name="time_boot_ms" units="ms">Timestamp of the component clock since boot time in milliseconds.</field>
     </message>
+    <message id="3" name="ECDH_KEY_EXCHANGE">
+      <description>Elliptic-Curve Diffie-Hellman key exchange message. Accessible through both version 1.0 and 2.0. 128-bit security.</description>
+      <field type="uint8_t[72]" name="public_key">ECDH public key</field>
+      <field type="uint8_t" name="target_system">system id of the target</field>
+      <field type="uint8_t" name="target_component">component ID of the target</field>
+      <field type="uint64_t" name="initial_timestamp">initial timestamp</field>
+    </message>
     <!-- FIXME to be removed / merged with SYSTEM_TIME -->
     <message id="4" name="PING">
       <description>A ping message either requesting or responding to a ping. This allows to measure the system latencies, including serial port, radio modem and UDP connections.</description>
