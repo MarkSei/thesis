@@ -1,1 +1,6 @@
 include/
+GroundControlStation/build/*
+GroundControlStation/bin/*
+
+!GroundControlStation/build/.gitkeep
+!GroundControlStation/bin/.gitkeep 
