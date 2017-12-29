@@ -1,6 +1,3 @@
-include/
-GroundControlStation/build/*
-GroundControlStation/bin/*
+/include/
+/protocol/
 
-!GroundControlStation/build/.gitkeep
-!GroundControlStation/bin/.gitkeep 
