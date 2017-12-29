@@ -10,4 +10,6 @@ parser = OptionParser()
 
 MAVLINK_STX = 253
 MAVLINK_STX_V2 = format(MAVLINK_STX, '02x')
-print(type(MAVLINK_STX_V2))
+MAVLINK_STX_V1 = 'fe'
+
+subprocess.call(["../protocol/protocol", "%s:8,payload:32" % (MAVLINK_STX_V2), "--no-numbers", "-b", "24"])

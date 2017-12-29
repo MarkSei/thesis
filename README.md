@@ -8,12 +8,15 @@ Analysis and design of secure drone communication protocols
   3. Chaskey signatures in MAVLink v1.0
   4. Parser that adds padding and tag fields for appr. messages (payload length <= (255 - padding - 128bit tag))
   5. Added appr. header data to signature
+  6. Add encryption scheme to MAVLink v2.0
+  7. Change signature scheme to Chaskey in MAVLink v2.0
 
 ## TODO prio. 1:
 
   1. Add key exchange messages and capabilities for MAVLink v1.0 and v2.0 (DH vs ECDH)
-  2. Add encryption scheme to MAVLink v2.0
-  3. Change signature scheme to Chaskey in MAVLink v2.0
+  2. Change secure init in v1.0
+  3. Add the working v2.0 header files to the generator
+  4. Change how secure states are handled in v1.0 (like in v2.0 (mostly))
 
 ## TODO prio. 2:
   
