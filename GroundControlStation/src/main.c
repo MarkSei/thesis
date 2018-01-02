@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h> 
+#include <assert.h>
 
 #include <common/mavlink.h>
 
@@ -23,6 +24,14 @@ void udpclienterror(char *msg) {
     exit(0);
 }
 
+int print_buffer(uint8_t* buf, uint16_t len) {
+
+    if (len > MAVLINK_MAX_PACKET_LEN || len < MAVLINK_NUM_NON_PAYLOAD_BYTES + 1) return 0;
+
+    for (unsigned int i = 0; i < len; ++i) printf("%02x", buf[i]);
+
+    return 1;
+}
 
 int main(int argc, char **argv) {
     int sockfd, portno, n;
@@ -72,11 +81,9 @@ int main(int argc, char **argv) {
     mavlink_msg_heartbeat_pack(1, 200, &msg, MAV_TYPE_GCS, MAV_AUTOPILOT_INVALID, 0, 0, 0);
 
     uint16_t len;
-    len = mavlink_msg_to_send_buffer(buf, &msg);
+    len = mavlink_msg_to_send_buffer((uint8_t*)buf, &msg);
 
-    printf("\nmessage to send: ");
-    for(unsigned int i = 0; i < len; i++) printf("%02x ", (uint8_t)buf[i]);
-    printf("\n");
+    assert(print_buffer((uint8_t*)buf, len));
     /* send the message to the server */
     serverlen = sizeof(serveraddr);
     n = sendto(sockfd, buf, len, 0, &serveraddr, serverlen);
@@ -87,8 +94,6 @@ int main(int argc, char **argv) {
     n = recvfrom(sockfd, buf, len, 0, &serveraddr, &serverlen);
     if (n < 0) 
       udpclienterror("ERROR in recvfrom");
-    printf("Echo from server: ");
-    for(unsigned int i = 0; i < n; i++) printf("%02x ", (uint8_t)buf[i]);
-    printf("\n");
+
     return 0;
 }

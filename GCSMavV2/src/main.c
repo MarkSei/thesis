@@ -4,10 +4,20 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/time.h>
+#include <assert.h>
 
 #include <common/mavlink.h>
 
 #define BUFSIZE 2041 //1024
+
+int print_buffer(uint8_t* buf, uint16_t len) {
+
+    if (len > MAVLINK_MAX_PACKET_LEN || len < MAVLINK_NUM_NON_PAYLOAD_BYTES + 1) return 0;
+
+    for (unsigned int i = 0; i < len; ++i) printf("%02x", buf[i]);
+
+    return 1;
+}
 
 int main(void) {
 
@@ -31,16 +41,6 @@ int main(void) {
 	
 	mavlink_init_secure_chan(&signing, MAVLINK_ROLE_GCS);
 
-	for(unsigned int i = 0; i < 16; ++i) printf("%02x", signing.key_send_enc[i]);
-	printf("\n");
-	for(unsigned int i = 0; i < 16; ++i) printf("%02x", signing.key_rec_enc[i]);
-	printf("\n");
-	for(unsigned int i = 0; i < 16; ++i) printf("%02x", signing.key_send_auth[i]);
-	printf("\n");
-	for(unsigned int i = 0; i < 16; ++i) printf("%02x", signing.key_rec_auth[i]);
-	printf("\n");
-	for(unsigned int i = 0; i < 16; ++i) printf("%02x", signing.iv[i]);
-	printf("\n");
 
 	mavlink_status_t *status = mavlink_get_channel_status(MAVLINK_COMM_0);
 	status->signing = &signing;
@@ -56,8 +56,6 @@ int main(void) {
 	uint16_t len;
 	len = mavlink_msg_to_send_buffer(buf, &msg);
 
-	for(unsigned int i = 0; i < len; ++i) printf("%02x ", buf[i]);
-	printf("\n");
 	
 	mavlink_init_secure_chan(&signing, MAVLINK_ROLE_UAV);
 	mavlink_message_t msg_rec;
@@ -72,7 +70,7 @@ int main(void) {
         //mavlink_msg_heartbeat_decode(&msg, &hb);
         if(msg_rec.msgid == 0)
         {
-          printf("\nReceived packet: SYS: %d, COMP: %d, LEN: %d, MSG ID: %d\n", msg_rec.sysid, msg_rec.compid, msg_rec.len, msg_rec.msgid);
+          assert(print_buffer(buf,len));
         }
         mavlink_msg_heartbeat_decode(&msg_rec, &heartbeat);
         
@@ -80,9 +78,6 @@ int main(void) {
       } 
     }
 
-    printf("\n");
-    for(unsigned int i = 0; i < msg_rec.len; i++) printf("%02x ", (uint8_t)_MAV_PAYLOAD(&msg_rec)[i]);
-    printf("\n");
 
 
 	
