@@ -74,7 +74,13 @@ int main(int argc, char **argv) {
     //fgets(buf, BUFSIZE, stdin);
 
     uint8_t key[] = { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c };
-    mavlink_init_secure_chan(key, MAVLINK_ROLE_GCS, MAVLINK_COMM_0);
+    
+    mavlink_signing_t signing;
+    memcpy(signing.secret_key, key, 16);
+    mavlink_init_secure_chan(&signing, MAVLINK_ROLE_GCS);
+    mavlink_status_t *status = mavlink_get_channel_status(MAVLINK_COMM_0);
+
+    status->signing = &signing;
 
     mavlink_message_t msg;
 

@@ -524,7 +524,7 @@ def copy_fixed_headers(directory, xml):
         "1.0": [ 'protocol.h', 'mavlink_helpers.h', 'mavlink_types.h', 'checksum.h', 'mavlink_conversions.h', 
                  'mavlink_crypto.h' ],
         "2.0": [ 'protocol.h', 'mavlink_helpers.h', 'mavlink_types.h', 'checksum.h', 'mavlink_conversions.h',
-                 'mavlink_get_info.h', 'mavlink_sha256.h' ]
+                 'mavlink_get_info.h', 'mavlink_crypto.h' ]
         }
     basepath = os.path.dirname(os.path.realpath(__file__))
     srcpath = os.path.join(basepath, 'C/include_v%s' % xml.wire_protocol_version)
@@ -537,19 +537,20 @@ def copy_fixed_headers(directory, xml):
         shutil.copy(src, dest)
 
     clist = {
-        "1.0": [ 'aes.c', 'aes.h', 'chaskey.c' ]
+        "1.0": [ 'aes.c', 'aes.h', 'chaskey.c' ],
+        "2.0": [ 'aes.c', 'aes.h', 'chaskey.c' ]
         }
     
-    if xml.wire_protocol_version == '1.0':
-        basepath = os.path.dirname(os.path.realpath(__file__))
-        srcpath = os.path.join(basepath, 'C/include_v%s/crypto' % xml.wire_protocol_version)
-        for c in clist[xml.wire_protocol_version]:
-            src = os.path.realpath(os.path.join(srcpath, c))
-            dest = os.path.realpath(os.path.join(directory, 'crypto/%s' % c))
-            crypto = os.path.realpath(os.path.join(directory, 'crypto'))
-            if not os.path.exists(dest):
-                mavparse.mkdir_p(crypto)
-            shutil.copy(src, dest)
+    
+    basepath = os.path.dirname(os.path.realpath(__file__))
+    srcpath = os.path.join(basepath, 'C/include_v%s/crypto' % xml.wire_protocol_version)
+    for c in clist[xml.wire_protocol_version]:
+        src = os.path.realpath(os.path.join(srcpath, c))
+        dest = os.path.realpath(os.path.join(directory, 'crypto/%s' % c))
+        crypto = os.path.realpath(os.path.join(directory, 'crypto'))
+        if not os.path.exists(dest):
+            mavparse.mkdir_p(crypto)
+        shutil.copy(src, dest)
     
 class mav_include(object):
     def __init__(self, base):

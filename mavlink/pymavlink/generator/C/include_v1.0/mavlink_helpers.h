@@ -77,108 +77,73 @@ MAVLINK_HELPER void mavlink_u16_to_u8(uint16_t a, uint8_t* b)
 
 }
 
-MAVLINK_HELPER void mavlink_init_secure_chan(uint8_t* key, uint8_t role, uint8_t chan)
+MAVLINK_HELPER void mavlink_init_secure_chan(mavlink_signing_t* signing, uint8_t role)
 {
-	mavlink_status_t* status = mavlink_get_channel_status(chan);
-	mavlink_secure_state_t s = { .flags = 1};
+
 	uint8_t iv[]  = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
 	uint8_t key_send_enc[16],
 			key_rec_enc[16],
 			key_send_auth[16],
 			key_rec_auth[16];
 
-	if(role)
-	{
-		uint8_t send[16] = "UAV to GCS Enc";
-		uint8_t rec[16] = "GCS to UAV Enc";
+	uint8_t *senc, *renc, *sauth, *rauth;
 
-		uint8_t k_send[32];
-		uint8_t k_rec[32];
+	// ENCRYPTION
+	uint8_t send[16] = "UAV to GCS Enc";
+	uint8_t rec[16] = "GCS to UAV Enc";
 
-		memcpy(k_send, key, 16);
-		memcpy(&k_send[16], send, 16);
-
-		chaskey_sign((const uint8_t*) k_send, 32, key_send_enc, key);
-
-		memcpy(k_rec, key, 16);
-		memcpy(&k_rec[16], rec, 16);
-
-		chaskey_sign((const uint8_t*) k_rec, 32, key_rec_enc, key);
+	// AUTHENTICATION
+	uint8_t send_auth[16] = "UAV to GCS Auth";
+	uint8_t rec_auth[16] = "GCS to UAV Auth";
 
 
-		// AUTHENTICATION
-
-		uint8_t send_auth[16] = "UAV to GCS Auth";
-		uint8_t rec_auth[16] = "GCS to UAV Auth";
-
-		uint8_t k_send_auth[32];
-		uint8_t k_rec_auth[32];
-
-		memcpy(k_send_auth, key, 16);
-		memcpy(&k_send_auth[16], send_auth, 16);
-
-		chaskey_sign((const uint8_t*) k_send_auth, 32, key_send_auth, key);
-
-		memcpy(k_rec_auth, key, 16);
-		memcpy(&k_rec_auth[16], rec_auth, 16);
-
-		chaskey_sign((const uint8_t*) k_rec_auth, 32, key_rec_auth, key);
-
-	}
-	else
-	{
-		uint8_t send[16] = "GCS to UAV Enc";
-		uint8_t rec[16] = "UAV to GCS Enc";
-
-		uint8_t k_send[32];
-		uint8_t k_rec[32];
-
-		memcpy(k_send, key, 16);
-		memcpy(&k_send[16], send, 16);
-
-		chaskey_sign((const uint8_t*) k_send, 32, key_send_enc, key);
-
-		memcpy(k_rec, key, 16);
-		memcpy(&k_rec[16], rec, 16);
-
-		chaskey_sign((const uint8_t*) k_rec, 32, key_rec_enc, key);
+	senc = (role) ? send : rec;
+	renc = (role) ? rec : send;
+	sauth = (role) ? send_auth : rec_auth;
+	rauth = (role) ? rec_auth : send_auth;
 
 
-		// AUTHENTICATION
 
-		uint8_t send_auth[16] = "GCS to UAV Auth";
-		uint8_t rec_auth[16] = "UAV to GCS Auth";
+	uint8_t k_send[32];
+	uint8_t k_rec[32];
 
-		uint8_t k_send_auth[32];
-		uint8_t k_rec_auth[32];
+	memcpy(k_send, signing->secret_key, 16);
+	memcpy(&k_send[16], senc, 16);
 
-		memcpy(k_send_auth, key, 16);
-		memcpy(&k_send_auth[16], send_auth, 16);
+	chaskey_sign((const uint8_t*) k_send, 32, key_send_enc, signing->secret_key);
 
-		chaskey_sign((const uint8_t*) k_send_auth, 32, key_send_auth, key);
+	memcpy(k_rec, signing->secret_key, 16);
+	memcpy(&k_rec[16], renc, 16);
 
-		memcpy(k_rec_auth, key, 16);
-		memcpy(&k_rec_auth[16], rec_auth, 16);
+	chaskey_sign((const uint8_t*) k_rec, 32, key_rec_enc, signing->secret_key);
 
-		chaskey_sign((const uint8_t*) k_rec_auth, 32, key_rec_auth, key);
-	}
+	uint8_t k_send_auth[32];
+	uint8_t k_rec_auth[32];
 
-	memcpy(s.key_send_enc, key_send_enc, 16);
-	memcpy(s.key_rec_enc, key_rec_enc, 16);
-	memcpy(s.key_send_auth, key_send_auth, 16);
-	memcpy(s.key_rec_auth, key_rec_auth, 16);
-	memcpy(s.iv, iv, 16);
+	memcpy(k_send_auth, signing->secret_key, 16);
+	memcpy(&k_send_auth[16], sauth, 16);
 
-	status->secure_state = s;
+	chaskey_sign((const uint8_t*) k_send_auth, 32, key_send_auth, signing->secret_key);
+
+	memcpy(k_rec_auth, signing->secret_key, 16);
+	memcpy(&k_rec_auth[16], rauth, 16);
+
+	chaskey_sign((const uint8_t*) k_rec_auth, 32, key_rec_auth, signing->secret_key);
+
+	memcpy(signing->key_send_enc, key_send_enc, 16);
+	memcpy(signing->key_rec_enc, key_rec_enc, 16);
+	memcpy(signing->key_send_auth, key_send_auth, 16);
+	memcpy(signing->key_rec_auth, key_rec_auth, 16);
+	memcpy(signing->iv, iv, 16);
 
 }
 
 
 
-MAVLINK_HELPER void mavlink_secure_send(uint8_t chan, uint8_t* msg, uint8_t msglen, uint8_t* x, uint8_t xlen)
+MAVLINK_HELPER void mavlink_secure_send(mavlink_signing_t *signing, uint8_t* msg, uint8_t msglen, uint8_t* x, uint8_t xlen)
 {
 
-	aes_encrypt(msg, msglen, mavlink_get_channel_status(chan)->secure_state.key_send_enc, mavlink_get_channel_status(chan)->secure_state.iv);
+	aes_encrypt(msg, msglen, signing->key_send_enc, signing->iv);
 
 	uint8_t tag[16];
 	memset(tag, 0x00, 16);
@@ -190,7 +155,7 @@ MAVLINK_HELPER void mavlink_secure_send(uint8_t chan, uint8_t* msg, uint8_t msgl
 	memcpy(result, msg, len1);
 	memcpy(result+len1, x, len2);
 
-	chaskey_sign((const uint8_t*) result, len1+len2, tag, mavlink_get_channel_status(chan)->secure_state.key_send_auth);
+	chaskey_sign((const uint8_t*) result, len1+len2, tag, signing->key_send_auth);
 	memcpy(&msg[msglen], tag, 16);
 
 	free(result);
@@ -199,27 +164,26 @@ MAVLINK_HELPER void mavlink_secure_send(uint8_t chan, uint8_t* msg, uint8_t msgl
 }
 
 
-MAVLINK_HELPER void mavlink_secure_receive(mavlink_status_t* status, uint8_t* msg, uint8_t msglen, uint8_t* x, uint8_t xlen)
+MAVLINK_HELPER int mavlink_secure_receive(mavlink_signing_t *signing, uint8_t* msg, uint8_t msglen, uint8_t* x, uint8_t xlen)
 {
-	
+	printf("um\n");
 	uint8_t tag[16];
 	memset(tag, 0x00, 16);
 
 	const size_t len1 = (size_t)msglen - 16;
 	const size_t len2 = (size_t)xlen;
 	uint8_t *result = malloc(len1+len2);
-
+	printf("um\n");
 	memcpy(result, msg, len1);
 	memcpy(result+len1, x, len2);
-
-	chaskey_sign((const uint8_t*) result, len1+len2, tag, status->secure_state.key_rec_auth);
-
-	
+	printf("um\n");
+	chaskey_sign((const uint8_t*) result, len1+len2, tag, signing->key_rec_auth);
+	printf("um\n");
 	if(memcmp(&msg[msglen-16], tag, 16))
-		status->msg_received = MAVLINK_FRAMING_BAD_CRC;
+		return 0;
 	else
-		aes_decrypt(msg, msglen-16, status->secure_state.key_rec_enc, status->secure_state.iv);
-	
+		aes_decrypt(msg, msglen-16, signing->key_rec_enc, signing->iv);
+	return 1;
 }
 
 
@@ -264,7 +228,7 @@ MAVLINK_HELPER uint16_t mavlink_finalize_message_chan(mavlink_message_t* msg, ui
 	headers[4] = msg->compid;
 	headers[5] = msg->msgid;
 
-	mavlink_secure_send(chan, (uint8_t *)_MAV_PAYLOAD(msg), msg->len - 16, headers, 6);
+	mavlink_secure_send(mavlink_get_channel_status(chan)->signing, (uint8_t *)_MAV_PAYLOAD(msg), msg->len - 16, headers, 6);
 
 	msg->checksum = crc_calculate(((const uint8_t*)(msg)) + 3, MAVLINK_CORE_HEADER_LEN);
 	crc_accumulate_buffer(&msg->checksum, _MAV_PAYLOAD(msg), msg->len);
@@ -595,9 +559,8 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		headers[4] = r_message->compid;
 		headers[5] = r_message->msgid;
 
-		mavlink_secure_receive(r_mavlink_status, (uint8_t *)_MAV_PAYLOAD(r_message), r_message->len, headers, 6);
-		
-
+		if(!mavlink_secure_receive(status->signing, (uint8_t *)_MAV_PAYLOAD(r_message), r_message->len, headers, 6))
+			status->msg_received = MAVLINK_FRAMING_BAD_CRC;
 		
 	}
 

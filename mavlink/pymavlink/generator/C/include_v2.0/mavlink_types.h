@@ -45,17 +45,17 @@ namespace mavlink {
  */
 MAVPACKED(
 typedef struct param_union {
-	union {
-		float param_float;
-		int32_t param_int32;
-		uint32_t param_uint32;
-		int16_t param_int16;
-		uint16_t param_uint16;
-		int8_t param_int8;
-		uint8_t param_uint8;
-		uint8_t bytes[4];
-	};
-	uint8_t type;
+    union {
+        float param_float;
+        int32_t param_int32;
+        uint32_t param_uint32;
+        int16_t param_int16;
+        uint16_t param_uint16;
+        int8_t param_int8;
+        uint8_t param_uint8;
+        uint8_t bytes[4];
+    };
+    uint8_t type;
 }) mavlink_param_union_t;
 
 
@@ -106,38 +106,38 @@ typedef struct __mavlink_system {
 
 MAVPACKED(
 typedef struct __mavlink_message {
-	uint16_t checksum;      ///< sent at end of packet
-	uint8_t magic;          ///< protocol magic marker
-	uint8_t len;            ///< Length of payload
-	uint8_t incompat_flags; ///< flags that must be understood
-	uint8_t compat_flags;   ///< flags that can be ignored if not understood
-	uint8_t seq;            ///< Sequence of packet
-	uint8_t sysid;          ///< ID of message sender system/aircraft
-	uint8_t compid;         ///< ID of the message sender component
-	uint32_t msgid:24;      ///< ID of message in payload
-	uint64_t payload64[(MAVLINK_MAX_PAYLOAD_LEN+MAVLINK_NUM_CHECKSUM_BYTES+7)/8];
-	uint8_t ck[2];          ///< incoming checksum bytes
-	uint8_t signature[MAVLINK_SIGNATURE_BLOCK_LEN];
+    uint16_t checksum;      ///< sent at end of packet
+    uint8_t magic;          ///< protocol magic marker
+    uint8_t len;            ///< Length of payload
+    uint8_t incompat_flags; ///< flags that must be understood
+    uint8_t compat_flags;   ///< flags that can be ignored if not understood
+    uint8_t seq;            ///< Sequence of packet
+    uint8_t sysid;          ///< ID of message sender system/aircraft
+    uint8_t compid;         ///< ID of the message sender component
+    uint32_t msgid:24;      ///< ID of message in payload
+    uint64_t payload64[(MAVLINK_MAX_PAYLOAD_LEN+MAVLINK_NUM_CHECKSUM_BYTES+7)/8];
+    uint8_t ck[2];          ///< incoming checksum bytes
+    uint8_t signature[MAVLINK_SIGNATURE_BLOCK_LEN];
 }) mavlink_message_t;
 
 typedef enum {
-	MAVLINK_TYPE_CHAR     = 0,
-	MAVLINK_TYPE_UINT8_T  = 1,
-	MAVLINK_TYPE_INT8_T   = 2,
-	MAVLINK_TYPE_UINT16_T = 3,
-	MAVLINK_TYPE_INT16_T  = 4,
-	MAVLINK_TYPE_UINT32_T = 5,
-	MAVLINK_TYPE_INT32_T  = 6,
-	MAVLINK_TYPE_UINT64_T = 7,
-	MAVLINK_TYPE_INT64_T  = 8,
-	MAVLINK_TYPE_FLOAT    = 9,
-	MAVLINK_TYPE_DOUBLE   = 10
+    MAVLINK_TYPE_CHAR     = 0,
+    MAVLINK_TYPE_UINT8_T  = 1,
+    MAVLINK_TYPE_INT8_T   = 2,
+    MAVLINK_TYPE_UINT16_T = 3,
+    MAVLINK_TYPE_INT16_T  = 4,
+    MAVLINK_TYPE_UINT32_T = 5,
+    MAVLINK_TYPE_INT32_T  = 6,
+    MAVLINK_TYPE_UINT64_T = 7,
+    MAVLINK_TYPE_INT64_T  = 8,
+    MAVLINK_TYPE_FLOAT    = 9,
+    MAVLINK_TYPE_DOUBLE   = 10
 } mavlink_message_type_t;
 
 #define MAVLINK_MAX_FIELDS 64
 
 typedef struct __mavlink_field_info {
-	const char *name;                 // name of this field
+    const char *name;                 // name of this field
         const char *print_format;         // printing format hint, or NULL
         mavlink_message_type_t type;      // type of this field
         unsigned int array_length;        // if non-zero, field is an array
@@ -148,10 +148,10 @@ typedef struct __mavlink_field_info {
 // note that in this structure the order of fields is the order
 // in the XML file, not necessary the wire order
 typedef struct __mavlink_message_info {
-	uint32_t msgid;                                        // message ID
-	const char *name;                                      // name of the message
-	unsigned num_fields;                                   // how many fields in this message
-	mavlink_field_info_t fields[MAVLINK_MAX_FIELDS];       // field information
+    uint32_t msgid;                                        // message ID
+    const char *name;                                      // name of the message
+    unsigned num_fields;                                   // how many fields in this message
+    mavlink_field_info_t fields[MAVLINK_MAX_FIELDS];       // field information
 } mavlink_message_info_t;
 
 #define _MAV_PAYLOAD(msg) ((const char *)(&((msg)->payload64[0])))
@@ -242,6 +242,10 @@ typedef bool (*mavlink_accept_unsigned_t)(const mavlink_status_t *status, uint32
 // This disables protection against replay attacks, but can be necessary for systems without a proper time base
 #define MAVLINK_SIGNING_FLAG_NO_TIMESTAMPS 2    ///< Ignore timestamp mismatches
 
+typedef enum {
+    MAVLINK_ROLE_GCS = 0,
+    MAVLINK_ROLE_UAV = 1
+} mavlink_role_t;
 
 /*
   state of MAVLink signing for this channel
@@ -251,6 +255,11 @@ typedef struct __mavlink_signing {
     uint8_t link_id;                   ///< Same as MAVLINK_CHANNEL
     uint64_t timestamp;                ///< Timestamp, in microseconds since UNIX epoch GMT
     uint8_t secret_key[32];
+    uint8_t key_send_enc[16];
+    uint8_t key_rec_enc[16];
+    uint8_t key_send_auth[16];
+    uint8_t key_rec_auth[16];
+    uint8_t iv[16];
     mavlink_accept_unsigned_t accept_unsigned_callback;
 } mavlink_signing_t;
 
@@ -282,12 +291,12 @@ typedef struct __mavlink_signing_streams {
   entry in table of information about each message type
  */
 typedef struct __mavlink_msg_entry {
-	uint32_t msgid;
-	uint8_t crc_extra;
-	uint8_t msg_len;
-	uint8_t flags;             // MAV_MSG_ENTRY_FLAG_*
-	uint8_t target_system_ofs; // payload offset to target_system, or 0
-	uint8_t target_component_ofs; // payload offset to target_component, or 0
+    uint32_t msgid;
+    uint8_t crc_extra;
+    uint8_t msg_len;
+    uint8_t flags;             // MAV_MSG_ENTRY_FLAG_*
+    uint8_t target_system_ofs; // payload offset to target_system, or 0
+    uint8_t target_component_ofs; // payload offset to target_component, or 0
 } mavlink_msg_entry_t;
 
 /*

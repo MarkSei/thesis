@@ -93,16 +93,17 @@ int udpserver(int argc, char **argv) {
       udpservererror("ERROR in recvfrom");
 
     uint8_t key[] = { 0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6, 0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c };
-    mavlink_init_secure_chan(key, MAVLINK_ROLE_UAV, MAVLINK_COMM_0);
+    
+    mavlink_signing_t signing;
+    memcpy(signing.secret_key, key, 16);
+    mavlink_init_secure_chan(&signing, MAVLINK_ROLE_UAV);
+    mavlink_status_t *status = mavlink_get_channel_status(MAVLINK_COMM_0);
+
+    status->signing = &signing;
 
     mavlink_message_t msg_rec;
     mavlink_heartbeat_t heartbeat;
 
-    mavlink_status_t* status_rec;
-    mavlink_status_t* status = mavlink_get_channel_status(MAVLINK_COMM_0);
-
-    printf("\n");
-    for(unsigned int i = 0; i < 16; i++) printf("%02x ", status->secure_state.key_rec_enc[i]);
     
     //printf("Bytes Received: %d\nDatagram: ", (int)recsize);
     for (unsigned int i = 0; i < n; ++i)
@@ -122,9 +123,6 @@ int udpserver(int argc, char **argv) {
       } 
     }
 
-    printf("\n");
-    for(unsigned int i = 0; i < msg_rec.len; i++) printf("%02x ", (uint8_t)_MAV_PAYLOAD(&msg_rec)[i]);
-    printf("\n%d", heartbeat.type);
     /* 
      * gethostbyaddr: determine who sent the datagram
      */

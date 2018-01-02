@@ -6,11 +6,12 @@
 #include "mavlink_conversions.h"
 #include <stdio.h>
 
+#include "mavlink_crypto.h"
+
 #ifndef MAVLINK_HELPER
 #define MAVLINK_HELPER
 #endif
 
-#include "mavlink_sha256.h"
 
 #ifdef MAVLINK_USE_CXX_NAMESPACE
 namespace mavlink {
@@ -58,6 +59,69 @@ MAVLINK_HELPER void mavlink_reset_channel_status(uint8_t chan)
 	status->parse_state = MAVLINK_PARSE_STATE_IDLE;
 }
 
+
+/**
+ * @author Mark Seidenschnur
+ */
+MAVLINK_HELPER void mavlink_init_secure_chan(mavlink_signing_t* signing, uint8_t role)
+{
+
+	uint8_t iv[]  = { 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
+	uint8_t key_send_enc[16],
+			key_rec_enc[16],
+			key_send_auth[16],
+			key_rec_auth[16];
+
+	uint8_t *senc, *renc, *sauth, *rauth;
+
+	// ENCRYPTION
+	uint8_t send[16] = "UAV to GCS Enc";
+	uint8_t rec[16] = "GCS to UAV Enc";
+
+	// AUTHENTICATION
+	uint8_t send_auth[16] = "UAV to GCS Auth";
+	uint8_t rec_auth[16] = "GCS to UAV Auth";
+
+	senc = (role) ? send : rec;
+	renc = (role) ? rec : send;
+	sauth = (role) ? send_auth : rec_auth;
+	rauth = (role) ? rec_auth : send_auth;
+
+
+	uint8_t k_send[32 + 16];
+	uint8_t k_rec[32 + 16];
+
+	memcpy(k_send, signing->secret_key, 32);
+	memcpy(&k_send[32], senc, 16);
+
+	chaskey_sign((const uint8_t*) k_send, 32+16, key_send_enc, 16, signing->secret_key);
+
+	memcpy(k_rec, signing->secret_key, 32);
+	memcpy(&k_rec[32], renc, 16);
+
+	chaskey_sign((const uint8_t*) k_rec, 32+16, key_rec_enc, 16, signing->secret_key);
+	uint8_t k_send_auth[32 + 16];
+	uint8_t k_rec_auth[32 + 16];
+
+	memcpy(k_send_auth, signing->secret_key, 32);
+	memcpy(&k_send_auth[32], sauth, 16);
+
+	chaskey_sign((const uint8_t*) k_send_auth, 32+16, key_send_auth, 16, signing->secret_key);
+
+	memcpy(k_rec_auth, signing->secret_key, 32);
+	memcpy(&k_rec_auth[32], rauth, 16);
+
+	chaskey_sign((const uint8_t*) k_rec_auth, 32+16, key_rec_auth, 16, signing->secret_key);
+
+	memcpy(signing->key_send_enc, key_send_enc, 16);
+	memcpy(signing->key_rec_enc, key_rec_enc, 16);
+	memcpy(signing->key_send_auth, key_send_auth, 16);
+	memcpy(signing->key_rec_auth, key_rec_auth, 16);
+	memcpy(signing->iv, iv, 16);
+
+}
+
+
 /**
  * @brief create a signature block for a packet
  */
@@ -67,7 +131,7 @@ MAVLINK_HELPER uint8_t mavlink_sign_packet(mavlink_signing_t *signing,
 					   const uint8_t *packet, uint8_t packet_len,
 					   const uint8_t crc[2])
 {
-	mavlink_sha256_ctx ctx;
+	
 	union {
 	    uint64_t t64;
 	    uint8_t t8[8];
@@ -80,13 +144,14 @@ MAVLINK_HELPER uint8_t mavlink_sign_packet(mavlink_signing_t *signing,
 	memcpy(&signature[1], tstamp.t8, 6);
 	signing->timestamp++;
 
-	mavlink_sha256_init(&ctx);
-	mavlink_sha256_update(&ctx, signing->secret_key, sizeof(signing->secret_key));
-	mavlink_sha256_update(&ctx, header, header_len);
-	mavlink_sha256_update(&ctx, packet, packet_len);
-	mavlink_sha256_update(&ctx, crc, 2);
-	mavlink_sha256_update(&ctx, signature, 7);
-	mavlink_sha256_final_48(&ctx, &signature[7]);
+	uint8_t buf[header_len + packet_len + 2 + 7];
+
+	memcpy(buf, header, header_len);
+	memcpy(&buf[header_len], packet, packet_len);
+	memcpy(&buf[header_len+packet_len], crc, 2);
+	memcpy(&buf[header_len+packet_len+2], signature, 7);
+
+	chaskey_sign((const uint8_t*) buf, header_len + packet_len + 2 + 7, &signature[7], 6, signing->key_send_auth);
 
 	return MAVLINK_SIGNATURE_BLOCK_LEN;
 }
@@ -98,9 +163,11 @@ MAVLINK_HELPER uint8_t mavlink_sign_packet(mavlink_signing_t *signing,
  */
 MAVLINK_HELPER uint8_t _mav_trim_payload(const char *payload, uint8_t length)
 {
+	/**
 	while (length > 1 && payload[length-1] == 0) {
 		length--;
 	}
+	*/
 	return length;
 }
 
@@ -117,19 +184,21 @@ MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
         const uint8_t *p = (const uint8_t *)&msg->magic;
 	const uint8_t *psig = msg->signature;
         const uint8_t *incoming_signature = psig+7;
-	mavlink_sha256_ctx ctx;
+	
 	uint8_t signature[6];
 	uint16_t i;
 
-	mavlink_sha256_init(&ctx);
-	mavlink_sha256_update(&ctx, signing->secret_key, sizeof(signing->secret_key));
-	mavlink_sha256_update(&ctx, p, MAVLINK_CORE_HEADER_LEN+1+msg->len);
-	mavlink_sha256_update(&ctx, msg->ck, 2);
-	mavlink_sha256_update(&ctx, psig, 1+6);
-	mavlink_sha256_final_48(&ctx, signature);
+	uint8_t buf[MAVLINK_CORE_HEADER_LEN+1+msg->len+2+7];
+
+	memcpy(buf, p, MAVLINK_CORE_HEADER_LEN+1+msg->len);
+	memcpy(&buf[MAVLINK_CORE_HEADER_LEN+1+msg->len], msg->ck, 2);
+	memcpy(&buf[MAVLINK_CORE_HEADER_LEN+1+msg->len+2], psig, 7);
+
+	chaskey_sign((const uint8_t*) buf, MAVLINK_CORE_HEADER_LEN+1+msg->len+2+7, signature, 6, signing->key_rec_auth);
+
 	if (memcmp(signature, incoming_signature, 6) != 0) {
 		return false;
-	}
+	} 
 
 	// now check timestamp
 	bool timestamp_checks = !(signing->flags & MAVLINK_SIGNING_FLAG_NO_TIMESTAMPS);
@@ -243,6 +312,8 @@ MAVLINK_HELPER uint16_t mavlink_finalize_message_buffer(mavlink_message_t* msg, 
 		buf[8] = (msg->msgid >> 8) & 0xFF;
 		buf[9] = (msg->msgid >> 16) & 0xFF;
 	}
+
+	aes_encrypt((uint8_t*)_MAV_PAYLOAD(msg), msg->len, status->signing->key_send_enc, status->signing->iv);
 
 	msg->checksum = crc_calculate(&buf[1], header_len-1);
 	crc_accumulate_buffer(&msg->checksum, _MAV_PAYLOAD(msg), msg->len);
@@ -812,6 +883,9 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 		if (status->packet_rx_success_count == 0) status->packet_rx_drop_count = 0;
 		// Count this packet as received
 		status->packet_rx_success_count++;
+
+
+		aes_decrypt((uint8_t *)_MAV_PAYLOAD(r_message), r_message->len, status->signing->key_rec_enc, status->signing->iv);
 	}
 
 	r_message->len = rxmsg->len; // Provide visibility on how far we are into current msg

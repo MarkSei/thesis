@@ -210,14 +210,6 @@ typedef enum {
     MAVLINK_FRAMING_BAD_CRC=2
 } mavlink_framing_t;
 
-typedef struct __mavlink_secure_state {
-    uint8_t flags; 
-    uint8_t key_send_enc[16];
-    uint8_t key_rec_enc[16];
-    uint8_t key_send_auth[16];
-    uint8_t key_rec_auth[16];
-    uint8_t iv[16];
-} mavlink_secure_state_t;
 
 typedef enum {
     MAVLINK_ROLE_GCS = 0,
@@ -234,9 +226,17 @@ typedef struct __mavlink_status {
     uint8_t current_tx_seq;             ///< Sequence number of last packet sent
     uint16_t packet_rx_success_count;   ///< Received packets
     uint16_t packet_rx_drop_count;      ///< Number of packet drops
-    mavlink_secure_state_t secure_state;
+    struct __mavlink_signing *signing;  ///< optional signing state
 } mavlink_status_t;
 
+typedef struct __mavlink_signing {
+    uint8_t secret_key[32];
+    uint8_t key_send_enc[16];
+    uint8_t key_rec_enc[16];
+    uint8_t key_send_auth[16];
+    uint8_t key_rec_auth[16];
+    uint8_t iv[16];
+} mavlink_signing_t;
 
 
 #define MAVLINK_BIG_ENDIAN 0
