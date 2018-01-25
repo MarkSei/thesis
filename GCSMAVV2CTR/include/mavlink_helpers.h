@@ -200,8 +200,6 @@ MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
 		return false;
 	} 
 
-	printf("SHITTO\n");
-
 	// now check timestamp
 	bool timestamp_checks = !(signing->flags & MAVLINK_SIGNING_FLAG_NO_TIMESTAMPS);
 	union tstamp {
@@ -216,8 +214,6 @@ MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
 		return false;
 	}
 
-	printf("SHITTO\n");
-
 	// find stream
 	for (i=0; i<signing_streams->num_signing_streams; i++) {
 		if (msg->sysid == signing_streams->stream[i].sysid &&
@@ -229,13 +225,11 @@ MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
 	if (i == signing_streams->num_signing_streams) {
 		if (signing_streams->num_signing_streams >= MAVLINK_MAX_SIGNING_STREAMS) {
 			// over max number of streams
-			printf("over max number of streams\n");
 			return false;
 		}
 		
 		// new stream. Only accept if timestamp is not more than 1 minute old
 		if (timestamp_checks && (tstamp.t64 + 6000*1000UL < signing->timestamp)) {
-			printf("new stream\n");
 			return false;
 		}
 		
@@ -250,12 +244,10 @@ MAVLINK_HELPER bool mavlink_signature_check(mavlink_signing_t *signing,
 		memcpy(last_tstamp.t8, signing_streams->stream[i].timestamp_bytes, 6);
 		if (timestamp_checks && tstamp.t64 <= last_tstamp.t64) {
 			// repeating old timestamp
-			printf("repeating\n");
 			return false;
 		}
 		
 	}
-	printf("SHITTO\n");
 	// remember last timestamp
 	memcpy(signing_streams->stream[i].timestamp_bytes, psig+1, 6);
 
