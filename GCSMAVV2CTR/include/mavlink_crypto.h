@@ -12,6 +12,7 @@
 
 #include "crypto/chaskey.c"
 #include "crypto/aes.c"
+#include "crypto/ecdh.c"
 
 #ifndef MAVLINK_CRYPTO
 #define MAVLINK_CRYPTO
